@@ -36,10 +36,11 @@ def getDirs(path):
     return (directories,dirCount,currentDir)
 
 def getInfoFromFolders(filePath,separator = "_",infoTemplate):
-    #TODO:Figure out how to get information out of "filestring".
+    #TODO: #3 Figure out how to get information out of "filestring".
     pass
 
 def renameFile(filePath):
+    #TODO:Write #2 renaming routine using information from getInfoFromFolders() and original name.
     pass
 
 def main():
@@ -53,6 +54,6 @@ def main():
             f.write(item+"\n")
 
 while 1:
-    #TODO:Define Looping condition.
+    #TODO: #4 Define Looping condition.
     main()
     break
