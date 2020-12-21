@@ -8,10 +8,10 @@ directories = [name for name in os.listdir(os.getcwd()) if os.path.isdir(name)]
 def list_files(dir):
     r = []
     for root, dirs, files in os.walk(dir,topdown=True,followlinks=False):
-        print(dirs,files)
+        #print(dirs,files)
         for name in files:
             if name.endswith(".tif"):
-                print(name)
+               # print(name)
                 r.append(os.path.join(root, name))
 
     return r
@@ -34,4 +34,8 @@ else:
         os.chdir(directories[0])
         currentDir = os.getcwd()
 
+#For Testing ONLY
 a = list_files(currentDir)
+with open(r"D:\Test.txt",'w') as f:
+    for item in a:
+        f.write(item+"\n")
