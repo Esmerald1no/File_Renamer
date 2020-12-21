@@ -6,15 +6,21 @@ os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
 
 
 def list_files(dir):
-    r = []
+    #r = []
+    fileCounter = 0
     for root, dirs, files in os.walk(dir,topdown=True,followlinks=False):
         #print(dirs,files)
         for name in files:
             if name.endswith(".tif"):
-               # print(name)
-                r.append(os.path.join(root, name))
+                #print(name)
+                #r.append(os.path.join(root, name))
+                filePathString = root + os.sep +name
+                if fileCounter == 0:
+                    infoTemplate = getInfoFromFolders(filePath=filePathString,mode=0)[1]
 
-    return r
+                else:
+                    pass
+    return
 
 def getDirs(path):
     directories = [name for name in os.listdir(os.getcwd()) if os.path.isdir(name)]
@@ -35,9 +41,16 @@ def getDirs(path):
             currentDir = os.getcwd()
     return (directories,dirCount,currentDir)
 
-def getInfoFromFolders(filePath,separator = "_",infoTemplate):
+def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = 1):
     #TODO: #3 Figure out how to get information out of "filestring".
-    pass
+    infoList = []
+    if mode == 0:
+        #TODO: #5 Add logic for user to decide which naming pattern they want.
+        infoTemplate = []
+    else:
+        infoTemplate = infoTemplate
+    
+    return (infoList, infoTemplate)
 
 def renameFile(filePath):
     #TODO:Write #2 renaming routine using information from getInfoFromFolders() and original name.
