@@ -38,21 +38,30 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = 1):
         topDir = currentDir.split("\\")[-1]
         topDirPos = filePath.find(topDir)
 
-        print(topDirPos)
+        #print(topDirPos)
 
         usefulInfoString = filePath[topDirPos:]
 
-        print(usefulInfoString)
+        #print(usefulInfoString)
 
         tempList = usefulInfoString.split("\\")
         fileName = tempList[-1]
 
-        print(fileName)
+        #print(fileName)
 
         usefulInfoList = tempList[:-1]
         
-        print(usefulInfoString)  
+        print(usefulInfoList)
+
         #TODO: #5 Add logic for user to decide which naming pattern they want.
+
+        print("These are an example the following tags found in the folder names.\nYou will be asked to name them for conveniencce, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
+        global usefulInfoPosDict
+        for tag in usefulInfoList:
+            tagName = input(f"What does the tag \"{tag}\" represent.")
+            usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
+
+            
 
         infoTemplate = []
     else:
