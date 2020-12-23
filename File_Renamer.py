@@ -6,6 +6,8 @@ os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
 
 def getDirs(path):
     directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
+
+    global visitedDirs
     if len(visitedDirs) > 0:
         tempDirectories = [item for item in directories not in visitedDirs]
         directories = tempDirectories
@@ -17,51 +19,74 @@ def getDirs(path):
             print(f"{i+1}. {directories[i]}")
             currentDir = int(input())
 
-            global visitedDirs
+            
             visitedDirs.append(directories[currentDir-1])
 
             os.chdir(directories[currentDir-1])
             currentDir = os.getcwd()
-    else:   
+
+    elif dirCount == 1:   
         if (currentDir := input(f"The directory found is \"{directories[0]}\" is this the desired directory? [Y/N].\nIf this is not the desired directory, insert the path for the new directory or move this module to that location: \n")) != "Y":
             currentDir = currentDir.lstrip("N ")
             os.chdir(currentDir)
         else:
             os.chdir(directories[0])
             currentDir = os.getcwd()
+
+            visitedDirs.append(directories[0])
+    else:
+        print("No direcories left to rename.")
+        return ([],-1,"")
+
     return (directories,dirCount,currentDir)
 
 def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = 1):
     infoList = []
-    if mode == 0:
+
+    def splitString(string, separator = "_"):
 
         topDir = currentDir.split("\\")[-1]
         topDirPos = filePath.find(topDir)
 
         #print(topDirPos)
 
-        usefulInfoString = filePath[topDirPos:]
+        folderInfoString = filePath[topDirPos:]
 
         #print(usefulInfoString)
 
-        tempList = usefulInfoString.split("\\")
+        tempList = folderInfoString.split("\\")
         fileName = tempList[-1]
 
         #print(fileName)
 
-        usefulInfoList = tempList[:-1]
-        
-        print(usefulInfoList)
+        folderInfoList = tempList[:-1]
 
+        global currentDirectoryDepth
+        if fileCounter == 0:
+         currentDirectoryDepth = len(folderInfoList)
+        
+        newLength = len(folderInfoList)
+
+        if newLength > currentDirectoryDepth: 
+            print("A new tag was found")
+            
+
+        splitString = folderInfoList.split(separator)
+        
+        print(folderInfoList)
+        
+        return splitString,fileName
+
+    if mode == 0:
         #TODO: #5 Add logic for user to decide which naming pattern they want.
 
-        print("These are an example the following tags found in the folder names.\nYou will be asked to name them for conveniencce, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
+        usefulInfoList = splitString(filePath)[0]
+
+        print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for conveniencce, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
         global usefulInfoPosDict
         for tag in usefulInfoList:
-            tagName = input(f"What does the tag \"{tag}\" represent.")
+            tagName = input(f"What does the tag \"{tag}\" represent?\n")
             usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
-
-            
 
         infoTemplate = []
     else:
@@ -76,10 +101,10 @@ def renameFile(filePath):
 def main():
     global currentPath 
     currentPath = os.path.abspath(os.getcwd())
+
     global directories,dirCount,currentDir
     directories,dirCount,currentDir = getDirs(currentPath)
 
-    fileCounter = 0
     for root, dirs, files in os.walk(currentDir,topdown=True,followlinks=False):
         for name in files:
             if name.endswith(".tif"):
@@ -88,14 +113,15 @@ def main():
                     infoTemplate = getInfoFromFolders(filePath=filePathString,mode=0)[1]
                 else:
                     pass
+
+                global fileCounter
                 fileCounter += 1 
 
-directories,dirCount,currentDir,currentPath = [],0,"",""
+exitFlag = False
+directories,visitedDirs,dirCount,currentDir,currentPath = [],[],0,"",""
 usefulInfoPosDict = defaultdict(dict)
-lenUsefulInfoPosDict = 0
-visitedDirs = []
+fileCounter,currentDirectoryDepth = 0,0
 
-while 1:
-    #TODO: #4 Define Looping condition.
+while dirCount >= 0 or exitFlag == True:
     main()
     break
