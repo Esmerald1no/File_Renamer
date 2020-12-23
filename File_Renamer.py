@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 
 #TEMP: Current Directory not the same as working directory.
 os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
@@ -6,24 +7,24 @@ os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
 
 
 def list_files(dir):
-    #r = []
+    r = []
     fileCounter = 0
     for root, dirs, files in os.walk(dir,topdown=True,followlinks=False):
         #print(dirs,files)
         for name in files:
             if name.endswith(".tif"):
                 #print(name)
-                #r.append(os.path.join(root, name))
+                r.append(os.path.join(root, name))
                 filePathString = root + os.sep +name
                 if fileCounter == 0:
                     infoTemplate = getInfoFromFolders(filePath=filePathString,mode=0)[1]
-
                 else:
                     pass
-    return
+                fileCounter += 1 
+    return r
 
 def getDirs(path):
-    directories = [name for name in os.listdir(os.getcwd()) if os.path.isdir(name)]
+    directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
     dirCount = len(directories)
     if dirCount>1:
         print("Multiple Directories Found, Select Working Directory:")
@@ -45,6 +46,17 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = 1):
     #TODO: #3 Figure out how to get information out of "filestring".
     infoList = []
     if mode == 0:
+        topDir = currentDir.split("\\")[-1]
+        topDirPos = filePath.find(topDir)
+        print(topDirPos)
+        usefulInfoString = filePath[topDirPos:]
+        print(usefulInfoString)
+        tempList = usefulInfoString.split("\\")
+        fileName = tempList[-1]
+        print(fileName)
+        usefulInfoList = tempList[:-1]
+        print(usefulInfoString)
+
         #TODO: #5 Add logic for user to decide which naming pattern they want.
         infoTemplate = []
     else:
@@ -57,7 +69,9 @@ def renameFile(filePath):
     pass
 
 def main():
+    global currentPath 
     currentPath = os.path.abspath(os.getcwd())
+    global directories,dirCount,currentDir
     directories,dirCount,currentDir = getDirs(currentPath)
 
     #For Testing ONLY
@@ -66,6 +80,8 @@ def main():
         for item in a:
             f.write(item+"\n")
 
+directories,dirCount,currentDir,currentPath = [],0,"",""
+usefulInfoDict = defaultdict(dict)
 while 1:
     #TODO: #4 Define Looping condition.
     main()
