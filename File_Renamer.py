@@ -6,6 +6,8 @@ os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
 
 def getDirs(path):
     directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
+
+    global visitedDirs
     if len(visitedDirs) > 0:
         tempDirectories = [item for item in directories not in visitedDirs]
         directories = tempDirectories
@@ -17,46 +19,140 @@ def getDirs(path):
             print(f"{i+1}. {directories[i]}")
             currentDir = int(input())
 
-            global visitedDirs
+            
             visitedDirs.append(directories[currentDir-1])
 
             os.chdir(directories[currentDir-1])
             currentDir = os.getcwd()
-    else:   
+
+    elif dirCount == 1:   
         if (currentDir := input(f"The directory found is \"{directories[0]}\" is this the desired directory? [Y/N].\nIf this is not the desired directory, insert the path for the new directory or move this module to that location: \n")) != "Y":
             currentDir = currentDir.lstrip("N ")
             os.chdir(currentDir)
         else:
             os.chdir(directories[0])
             currentDir = os.getcwd()
+
+            visitedDirs.append(directories[0])
+    else:
+        print("No direcories left to rename.")
+        return ([],-1,"")
+
     return (directories,dirCount,currentDir)
 
-def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = 1):
+def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve Info",extraParams = None):
     infoList = []
-    if mode == 0:
+    separator = separator
+    infoTemplate = infoTemplate
+
+    def splitString(string, separator = "_"):
 
         topDir = currentDir.split("\\")[-1]
         topDirPos = filePath.find(topDir)
 
-        print(topDirPos)
+        folderInfoString = filePath[topDirPos:]
 
-        usefulInfoString = filePath[topDirPos:]
-
-        print(usefulInfoString)
-
-        tempList = usefulInfoString.split("\\")
+        tempList = folderInfoString.split("\\")
         fileName = tempList[-1]
 
-        print(fileName)
+        folderInfoList = tempList[:-1]
 
-        usefulInfoList = tempList[:-1]
+        global currentDirectoryDepth
+        if fileCounter == 0:
+            currentDirectoryDepth = len(folderInfoList)
         
-        print(usefulInfoString)  
+        newLength = len(folderInfoList)
+
+        if newLength > currentDirectoryDepth:
+            print( 3*"\n" + f"{newLength-currentDirectoryDepth} new tag(s) were found!\n")
+            newUsefulInfo = folderInfoList[currentDirectoryDepth + 1 :-1]
+
+            nonlocal infoTemplate
+            infoTemplate = getInfoFromFolders(filePath, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo))[1]
+
+        if "Use Separator" in extraParams:
+            splitString = folderInfoList.split(separator)
+        
+        else:
+            splitString = folderInfoList
+        
+        print(folderInfoList)
+        
+        return splitString,fileName
+
+    if mode == "Make Template":
         #TODO: #5 Add logic for user to decide which naming pattern they want.
 
-        infoTemplate = []
-    else:
-        infoTemplate = infoTemplate
+        if "Update Template" in extraParams:
+            usefulInfoList = extraParams[1]
+        else: 
+            usefulInfoList = splitString(filePath)[0]
+            print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for conveniencce, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
+            
+        global usefulInfoPosDict
+        for tag in usefulInfoList:
+            tagName = input(f"What does the tag \"{tag}\" represent?\n")
+            usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
+        
+        if infoTemplate == []:
+            correctSelection = "N"
+            tempDict = {}
+            while correctSelection != "Y":
+                print(3*"\n"+"These are the tags you named earlier:")
+                for i, item in enumerate(usefulInfoPosDict.keys()):
+                    print(f"{i}. {item}")
+                    tempDict[i] = item
+
+                infoTemplateString = input("Using the numbers, choose which, and in what order the information should be coppied to the file name separated by spaces (unused numbers will be ignored):\n\n")
+
+                tempList2 = []
+                print("Your selection was:")
+                for i in infoTemplateString.split(" "):
+                    print(tempDict[i],end="_")
+                    tempList2.append(tempDict[i])
+                    
+                correctSelection = input("Is this correct?[Y/N]\n")
+
+            infoTemplate = tempList2
+
+            for i in tempDict.values() not in tempList2:
+                usefulInfoPosDict[i] = usefulInfoPosDict[i] + "(Unused)"
+            
+        else:
+            changePattern = ("New Tags were added since last selection, do you wish to update naming pattern? [Y/N]\n")
+            
+            if changePattern == "Y":
+                correctSelection = "N"
+                tempDict = {}
+                while correctSelection != "Y":
+                    print(3*"\n"+"This is the updated list of tags:")
+                    for i, item in enumerate(usefulInfoPosDict.keys()):
+                        print(f"{i}. {item}")
+                        tempDict[i] = item
+
+                    infoTemplateString = input("Using the numbers, choose which, and in what order the information should be coppied to the file name separated by spaces (unused numbers will be ignored):\n\n")
+
+                    tempList2 = []
+                    print("Your selection was:")
+                    for i in infoTemplateString.split(" "):
+                        print(tempDict[i],end="_")
+                        tempList2.append(tempDict[i])
+                        
+                    correctSelection = input("Is this correct?[Y/N]\n")
+
+                infoTemplate = tempList2
+
+                for i in tempDict.values() not in tempList2:
+                    usefulInfoPosDict[i] = usefulInfoPosDict[i] + "(Unused)"
+            else:
+                pass
+        
+        infoList = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Get Info")[0]
+
+    elif mode == "Get Info":
+        allInfoList = splitString(filePath)
+        #TODO: finish wtriting filering of the list
+        
     
     return (infoList, infoTemplate)
 
@@ -67,26 +163,29 @@ def renameFile(filePath):
 def main():
     global currentPath 
     currentPath = os.path.abspath(os.getcwd())
+
     global directories,dirCount,currentDir
     directories,dirCount,currentDir = getDirs(currentPath)
 
-    fileCounter = 0
     for root, dirs, files in os.walk(currentDir,topdown=True,followlinks=False):
         for name in files:
             if name.endswith(".tif"):
                 filePathString = root + os.sep +name
+
+                global fileCounter,infoTemplate
                 if fileCounter == 0:
-                    infoTemplate = getInfoFromFolders(filePath=filePathString,mode=0)[1]
+                    infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
                 else:
                     pass
+
                 fileCounter += 1 
 
-directories,dirCount,currentDir,currentPath = [],0,"",""
+exitFlag = False
+directories,visitedDirs,dirCount,currentDir,currentPath = [],[],0,"",""
+infoTemplate = []
 usefulInfoPosDict = defaultdict(dict)
-lenUsefulInfoPosDict = 0
-visitedDirs = []
+fileCounter,currentDirectoryDepth = 0,0
 
-while 1:
-    #TODO: #4 Define Looping condition.
+while dirCount >= 0 or exitFlag == True:
     main()
     break
