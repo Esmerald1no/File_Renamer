@@ -166,9 +166,12 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     
     return (infoList, infoTemplate)
 
-def renameFile(filePath,infoList):
-    #TODO:Write #2 renaming routine using information from getInfoFromFolders() and original name.
-    pass
+def renameFile(filePath,infoList,separator = "_"):
+    actualName = infoList.join(separator)
+    actualPath = filePath.split("\\")[:-1]
+    actualPath = actualPath + os.sep + actualName
+    os.rename(filePath,actualPath)
+    
 
 def main():
     global currentPath 
@@ -176,9 +179,9 @@ def main():
 
     global directories,dirCount,currentDir
     directories,dirCount,currentDir = getDirs(currentPath)
-
-    if separator := input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it:"):
-        separator = separator.lstrip("Y ")
+    separator = "_"
+    if separatorPrompt := input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it:") != "N":
+        separator = separatorPrompt.lstrip("Y ")
         global separatorFlag
         separatorFlag = True
         
@@ -191,10 +194,11 @@ def main():
                 if fileCounter == 0:                    
                     infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
                     infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")[0]
+                    renameFile(filePathString,infoList,separator)
 
                 else:
                     infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")[0]
-                    renameFile(filePathString,infoList)
+                    renameFile(filePathString,infoList,separator)
 
 
                 fileCounter += 1 
