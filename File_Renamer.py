@@ -70,7 +70,10 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             newUsefulInfo = folderInfoList[currentDirectoryDepth + 1 :-1]
 
             nonlocal infoTemplate
-            infoTemplate = getInfoFromFolders(filePath, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo))[1]
+            if separatorFlag:
+                infoTemplate = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo,"Use Separator"))[1]
+            else:
+                 infoTemplate = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo))[1]
 
         if "Use Separator" in extraParams:
             splitString = folderInfoList.split(separator)
@@ -146,12 +149,9 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
                     usefulInfoPosDict[i] = usefulInfoPosDict[i] + "(Unused)"
             else:
                 pass
-        
-        infoList = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Get Info")[0]
 
     elif mode == "Get Info":
-        allInfoList = splitString(filePath)
-        #TODO: #9 Finish wtriting filering of the list    
+        allInfoList = splitString(filePath) 
         
         for item in infoTemplate:
             infoPos = usefulInfoPosDict[item]
@@ -171,14 +171,24 @@ def main():
     global directories,dirCount,currentDir
     directories,dirCount,currentDir = getDirs(currentPath)
 
-    for root, dirs, files in os.walk(currentDir,topdown=True,followlinks=False):
+    if separator := input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it:"):
+        separator = separator.lstrip("Y ")
+        global separatorFlag
+        separatorFlag = True
+        
+
+    for root, _dirs, files in os.walk(currentDir,topdown=True,followlinks=False):
         for name in files:
             if name.endswith(".tif"):
                 filePathString = root + os.sep +name
-
                 global fileCounter,infoTemplate
                 if fileCounter == 0:
-                    infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
+                    if separatorFlag:
+                        infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template",extraParams="Use Separator")[1]
+                        infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info",extraParams="Use Separator")[0]
+                    else:
+                        infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
+                        infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")[0] 
                 else:
                     pass
 
@@ -189,6 +199,8 @@ directories,visitedDirs,dirCount,currentDir,currentPath = [],[],0,"",""
 infoTemplate = []
 usefulInfoPosDict = defaultdict(dict)
 fileCounter,currentDirectoryDepth = 0,0
+separatorFlag = False
+
 
 while dirCount >= 0 or exitFlag == True:
     main()
