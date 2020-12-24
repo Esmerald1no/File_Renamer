@@ -41,6 +41,8 @@ def getDirs(path):
     return (directories,dirCount,currentDir)
 
 def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve Info",extraParams = None):
+    global usefulInfoPosDict
+    
     infoList = []
     separator = separator
     infoTemplate = infoTemplate
@@ -81,7 +83,6 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
         return splitString,fileName
 
     if mode == "Make Template":
-        #TODO: #5 Add logic for user to decide which naming pattern they want.
 
         if "Update Template" in extraParams:
             usefulInfoList = extraParams[1]
@@ -89,7 +90,6 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             usefulInfoList = splitString(filePath)[0]
             print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for conveniencce, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
             
-        global usefulInfoPosDict
         for tag in usefulInfoList:
             tagName = input(f"What does the tag \"{tag}\" represent?\n")
             usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
@@ -151,8 +151,12 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
     elif mode == "Get Info":
         allInfoList = splitString(filePath)
-        #TODO: finish wtriting filering of the list
+        #TODO: #9 Finish wtriting filering of the list    
         
+        for item in infoTemplate:
+            infoPos = usefulInfoPosDict[item]
+            infoList.append(allInfoList[infoPos])
+
     
     return (infoList, infoTemplate)
 
