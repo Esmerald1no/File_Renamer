@@ -47,7 +47,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     separator = separator
     infoTemplate = infoTemplate
 
-    def splitString(string, separator = "_"):
+    def splitString(string, separator = "_", extraParams = None):
 
         topDir = currentDir.split("\\")[-1]
         topDirPos = filePath.find(topDir)
@@ -89,8 +89,11 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
         if "Update Template" in extraParams:
             usefulInfoList = extraParams[1]
-        else: 
-            usefulInfoList = splitString(filePath)[0]
+        else:
+            if separatorFlag:
+                usefulInfoList = splitString(filePath,separator,extraParams="Use Separator")[0]
+            else:
+                usefulInfoList = splitString(filePath)
             print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for conveniencce, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
             
         for tag in usefulInfoList:
@@ -151,7 +154,8 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
                 pass
 
     elif mode == "Get Info":
-        allInfoList = splitString(filePath) 
+        if separatorFlag:
+            allInfoList = splitString(filePath,separator,extraParams="Use Separator")
         
         for item in infoTemplate:
             infoPos = usefulInfoPosDict[item]
@@ -160,7 +164,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     
     return (infoList, infoTemplate)
 
-def renameFile(filePath):
+def renameFile(filePath,infoList):
     #TODO:Write #2 renaming routine using information from getInfoFromFolders() and original name.
     pass
 
@@ -182,15 +186,14 @@ def main():
             if name.endswith(".tif"):
                 filePathString = root + os.sep +name
                 global fileCounter,infoTemplate
-                if fileCounter == 0:
-                    if separatorFlag:
-                        infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template",extraParams="Use Separator")[1]
-                        infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info",extraParams="Use Separator")[0]
-                    else:
-                        infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
-                        infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")[0] 
+                if fileCounter == 0:                    
+                    infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
+                    infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")[0]
+
                 else:
-                    pass
+                    infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")[0]
+                    renameFile(filePathString,infoList)
+
 
                 fileCounter += 1 
 
