@@ -27,6 +27,7 @@ def getDirs(path):
 
     elif dirCount == 1:   
         if (currentDir := input(f"The directory found is \"{directories[0]}\" is this the desired directory? [Y/N].\nIf this is not the desired directory, insert the path for the new directory or move this module to that location: \n")) != "Y":
+            #TODO: #12 Crash when accessing unexistant directory, easy Try:Except Fix.
             currentDir = currentDir.lstrip("N ")
             os.chdir(currentDir)
         else:
@@ -158,6 +159,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             allInfoList = splitString(filePath,separator,extraParams="Use Separator")
         
         for item in infoTemplate:
+            #TODO: #13 Possible crash if try to access information for a next layer of subfolder that does not exist, easy fix Try/Except replacing with empty string.
             infoPos = usefulInfoPosDict[item]
             infoList.append(allInfoList[infoPos])
 
