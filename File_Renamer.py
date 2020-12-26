@@ -14,7 +14,7 @@ def getDirs(path):
 
     dirCount = len(directories)
     if dirCount>1:
-        print("Multiple Directories Found, Select Working Directory:")
+        print("Multiple directories found, Select Working Directory:")
         for i in range(dirCount):
             print(f"{i+1}. {directories[i]}")
             currentDir = int(input())
@@ -188,7 +188,6 @@ def renameFile(filePath,infoList=[],fileExtension="",separator = "_",extraParams
 
     finally: failCounter = 0
     
-
 def main():
     global currentPath 
     currentPath = os.path.abspath(os.getcwd())
@@ -233,4 +232,5 @@ separatorFlag = False
 
 while dirCount >= 0 or exitFlag == True:
     main()
-    break
+    if continueFlag := input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") != "Y":
+        exitFlag = False
