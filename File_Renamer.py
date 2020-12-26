@@ -196,6 +196,9 @@ def main():
     global directories,dirCount,currentDir
     directories,dirCount,currentDir = getDirs(currentPath)
     separator = "_"
+    fileExtension = input("What is the file extension of the file(s) you are trying to rename?\n")
+    if "." not in fileExtension:
+        fileExtension = "."+fileExtension
     if separatorPrompt := input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it:") != "N":
         separator = separatorPrompt.lstrip("Y ")
         global separatorFlag
@@ -204,7 +207,7 @@ def main():
 
     for root, _dirs, files in os.walk(currentDir,topdown=True,followlinks=False):
         for name in files:
-            if name.endswith(".tif"):
+            if name.endswith(fileExtension):
                 filePathString = root + os.sep +name
                 global fileCounter,infoTemplate
                 if fileCounter == 0:                    
@@ -225,6 +228,7 @@ infoTemplate = []
 usefulInfoPosDict = defaultdict(dict)
 fileCounter,currentDirectoryDepth = 0,0
 separatorFlag = False
+
 
 
 while dirCount >= 0 or exitFlag == True:
