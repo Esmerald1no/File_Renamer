@@ -27,9 +27,11 @@ def getDirs(path):
 
     elif dirCount == 1:   
         if (currentDir := input(f"The directory found is \"{directories[0]}\" is this the desired directory? [Y/N].\nIf this is not the desired directory, insert the path for the new directory or move this module to that location: \n")) != "Y":
-            #TODO: #12 Crash when accessing unexistant directory, easy Try:Except Fix.
             currentDir = currentDir.lstrip("N ")
-            os.chdir(currentDir)
+            try:
+                os.chdir(currentDir)
+            except FileNotFoundError:
+                currentDir = input("The inserted path is not valid, please verify it and insert the correct path:\n")
         else:
             os.chdir(directories[0])
             currentDir = os.getcwd()
@@ -57,6 +59,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
         tempList = folderInfoString.split("\\")
         fileName = tempList[-1]
+        fileExtension = "." + fileName.split(".")[-1]
 
         folderInfoList = tempList[:-1]
 
@@ -84,7 +87,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
         
         print(folderInfoList)
         
-        return splitString,fileName
+        return splitString,fileName,fileExtension   
 
     if mode == "Make Template":
 
@@ -156,21 +159,34 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
     elif mode == "Get Info":
         if separatorFlag:
-            allInfoList = splitString(filePath,separator,extraParams="Use Separator")
+            allInfoList,_fileName,fileExtension = splitString(filePath,separator,extraParams="Use Separator")
         
         for item in infoTemplate:
-            #TODO: #13 Possible crash if try to access information for a next layer of subfolder that does not exist, easy fix Try/Except replacing with empty string.
-            infoPos = usefulInfoPosDict[item]
-            infoList.append(allInfoList[infoPos])
+            try:
+                infoPos = usefulInfoPosDict[item]
+                infoList.append(allInfoList[infoPos])
+
+            except IndexError:
+                infoList.append("")
 
     
-    return (infoList, infoTemplate)
+    return (infoList, infoTemplate,fileExtension)
 
-def renameFile(filePath,infoList,separator = "_"):
-    actualName = infoList.join(separator)
-    actualPath = filePath.split("\\")[:-1]
-    actualPath = actualPath + os.sep + actualName
-    os.rename(filePath,actualPath)
+def renameFile(filePath,infoList=[],fileExtension="",separator = "_",extraParams = None, failCounter = 0):
+    if failCounter == 0:
+        actualName = infoList.join(separator)
+        actualPath = filePath.split("\\")[:-1]
+        actualPath = actualPath + os.sep + actualName + fileExtension
+    else:
+        actualPath = extraParams
+    try:
+        os.rename(filePath,actualPath)
+    except FileExistsError:
+        failCounter +=1
+        actualPath = filePath.split("\\")[:-1] + os.sep + actualName + failCounter + fileExtension
+        renameFile(filePath,extraParams=actualPath,failCounter=failCounter)
+
+    finally: failCounter = 0
     
 
 def main():
@@ -193,12 +209,12 @@ def main():
                 global fileCounter,infoTemplate
                 if fileCounter == 0:                    
                     infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
-                    infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")[0]
-                    renameFile(filePathString,infoList,separator)
+                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")
+                    renameFile(filePathString,infoList,fileExtension,separator)
 
                 else:
-                    infoList = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")[0]
-                    renameFile(filePathString,infoList,separator)
+                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")
+                    renameFile(filePathString,infoList,fileExtension,separator)
 
 
                 fileCounter += 1 
