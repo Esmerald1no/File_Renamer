@@ -1,11 +1,8 @@
-import os
+from os import chdir, getcwd, rename, listdir, sep, path, walk
 from collections import defaultdict
 
-#TEMP: Current Directory not the same as working directory.
-os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
-
 def getDirs(path):
-    directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
+    directories = [name for name in listdir(currentPath) if path.isdir(name)]
 
     global visitedDirs
     if len(visitedDirs) > 0:
@@ -22,19 +19,20 @@ def getDirs(path):
             
             visitedDirs.append(directories[currentDir-1])
 
-            os.chdir(directories[currentDir-1])
-            currentDir = os.getcwd()
+            chdir(directories[currentDir-1])
+            currentDir = getcwd()
 
     elif dirCount == 1:   
         if (currentDir := input(f"The directory found is \"{directories[0]}\" is this the desired directory? [Y/N].\nIf this is not the desired directory, insert the path for the new directory or move this module to that location: \n")) != "Y":
             currentDir = currentDir.lstrip("N ")
             try:
-                os.chdir(currentDir)
+                chdir(currentDir)
             except FileNotFoundError:
                 currentDir = input("The inserted path is not valid, please verify it and insert the correct path:\n")
+                chdir(currentDir)
         else:
-            os.chdir(directories[0])
-            currentDir = os.getcwd()
+            chdir(directories[0])
+            currentDir = getcwd()
 
             visitedDirs.append(directories[0])
     else:
@@ -176,21 +174,21 @@ def renameFile(filePath,infoList=[],fileExtension="",separator = "_",extraParams
     if failCounter == 0:
         actualName = infoList.join(separator)
         actualPath = filePath.split("\\")[:-1]
-        actualPath = actualPath + os.sep + actualName + fileExtension
+        actualPath = actualPath + sep + actualName + fileExtension
     else:
         actualPath = extraParams
     try:
-        os.rename(filePath,actualPath)
+        rename(filePath,actualPath)
     except FileExistsError:
         failCounter +=1
-        actualPath = filePath.split("\\")[:-1] + os.sep + actualName + failCounter + fileExtension
+        actualPath = filePath.split("\\")[:-1] + sep + actualName + failCounter + fileExtension
         renameFile(filePath,extraParams=actualPath,failCounter=failCounter)
 
     finally: failCounter = 0
     
 def main():
     global currentPath 
-    currentPath = os.path.abspath(os.getcwd())
+    currentPath = path.abspath(getcwd())
 
     global directories,dirCount,currentDir
     directories,dirCount,currentDir = getDirs(currentPath)
@@ -204,10 +202,10 @@ def main():
         separatorFlag = True
         
 
-    for root, _dirs, files in os.walk(currentDir,topdown=True,followlinks=False):
+    for root, _dirs, files in walk(currentDir,topdown=True,followlinks=False):
         for name in files:
             if name.endswith(fileExtension):
-                filePathString = root + os.sep +name
+                filePathString = root + sep +name
                 global fileCounter,infoTemplate
                 if fileCounter == 0:                    
                     infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
