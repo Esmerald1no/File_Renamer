@@ -163,10 +163,14 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
                 infoTemplate = tempList2
 
-                for i in tempDict.values() not in tempList2:
-                    usefulInfoPosDict[i] = usefulInfoPosDict[i] + "(Unused)"
+                for i in tempDict.values():
+                    if i not in tempList2:
+                        if "(Unused)" not in usefulInfoPosDict[i]:
+                            usefulInfoPosDict[i] = usefulInfoPosDict[i] + " (Unused)"
+                    elif i in tempList2 and ("(Unused)" in usefulInfoPosDict[i]):
+                        usefulInfoPosDict[i] = usefulInfoPosDict[i].replace(" (Unused)","")
             else:
-                pass
+                print("Ignoring new entries.")
 
     elif mode == "Get Info":
         if separatorFlag:
