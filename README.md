@@ -1,4 +1,4 @@
-# Tiff_File_Renamer
+# File_Renamer
 
 This code is part 1 of a 2 part project to aid laboratory research of spheroids.
 
