@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 
+#TEMP: Remove afterward
 os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
 
 def getDirs(path):
@@ -94,8 +95,6 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
         else:
             splitString = folderInfoList
         
-        print(folderInfoList)
-        
         return splitString,fileName,fileExtension   
 
     if mode == "Make Template":
@@ -123,19 +122,22 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
                     tempDict[i] = item
 
                 infoTemplateString = input("Using the numbers, choose which,\nand in what order the information should be coppied to the file name separated by spaces (unused numbers will be ignored):\n")
+                
+                infoTemplateString = infoTemplateString.replace(".","")
 
                 tempList2 = []
                 print("Your selection was:")
                 for i in infoTemplateString.split(" "):
-                    print(tempDict[i],end="_")
-                    tempList2.append(tempDict[i])
+                    print(tempDict[int(i)],end="_")
+                    tempList2.append(tempDict[int(i)])
                     
                 correctSelection = input("Is this correct?[Y/N]\n")
 
             infoTemplate = tempList2
 
-            for i in tempDict.values() not in tempList2:
-                usefulInfoPosDict[i] = usefulInfoPosDict[i] + "(Unused)"
+            for i in tempDict.values():
+                if i not in tempList2:
+                    usefulInfoPosDict[i] = usefulInfoPosDict[i] + " (Unused)"
             
         else:
             changePattern = ("New Tags were added since last selection, do you wish to update naming pattern? [Y/N]\n")
@@ -154,8 +156,8 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
                     tempList2 = []
                     print("Your selection was:")
                     for i in infoTemplateString.split(" "):
-                        print(tempDict[i],end="_")
-                        tempList2.append(tempDict[i])
+                        print(tempDict[int(i)],end="_")
+                        tempList2.append(tempDict[int(i)])
                         
                     correctSelection = input("Is this correct?[Y/N]\n")
 
