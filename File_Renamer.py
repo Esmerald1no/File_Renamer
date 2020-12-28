@@ -51,6 +51,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     infoList = []
     separator = separator
     infoTemplate = infoTemplate
+    fileExtension = ""
 
     def splitString(string, separator = "_", extraParams = None):
 
@@ -123,7 +124,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
                 infoTemplateString = input("Using the numbers, choose which,\nand in what order the information should be coppied to the file name separated by spaces (unused numbers will be ignored):\n")
                 
-                infoTemplateString = infoTemplateString.replace(".","")
+                infoTemplateString = infoTemplateString.replace(".","").strip(" ")
 
                 tempList2 = []
                 print("Your selection was:")
@@ -131,7 +132,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
                     print(tempDict[int(i)],end="_")
                     tempList2.append(tempDict[int(i)])
                     
-                correctSelection = input("Is this correct?[Y/N]\n")
+                correctSelection = input("\nIs this correct?[Y/N]\n")
 
             infoTemplate = tempList2
 
@@ -174,8 +175,9 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
     elif mode == "Get Info":
         if separatorFlag:
-            allInfoList,_fileName,fileExtension = splitString(filePath,separator,extraParams="Use Separator")
-        
+            allInfoList,_fileName,_fileExtension = splitString(filePath,separator,extraParams="Use Separator")
+        else:
+            allInfoList,_fileName,_fileExtension = splitString(filePath,separator)
         for item in infoTemplate:
             try:
                 infoPos = usefulInfoPosDict[item]
@@ -214,7 +216,7 @@ def main():
     if "." not in fileExtension:
         fileExtension = "."+fileExtension
     
-    separatorPrompt = input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it:") 
+    separatorPrompt = input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it: (Optional)") 
     if separatorPrompt != "N":
         separator = separatorPrompt.lstrip("Y ")
         global separatorFlag
@@ -228,7 +230,7 @@ def main():
                 global fileCounter,infoTemplate
                 if fileCounter == 0:                    
                     infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
-                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")
+                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, infoTemplate = infoTemplate, mode="Get Info")
                     renameFile(filePathString,infoList,fileExtension,separator)
 
                 else:
