@@ -204,7 +204,7 @@ def renameFile(filePath,infoList=[],fileExtension="",separator = "_",extraParams
         renameFile(filePath,extraParams=actualPath,failCounter=failCounter)
 
     finally: failCounter = 0
-    
+    ö
 def main():
     global currentPath 
     currentPath = os.path.abspath(os.getcwd())
