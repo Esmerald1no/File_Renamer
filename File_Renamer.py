@@ -4,13 +4,14 @@ from collections import defaultdict
 os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
 
 def getDirs(path):
+    
     directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
 
     global visitedDirs
     if len(visitedDirs) > 0:
         tempDirectories = [item for item in directories not in visitedDirs]
         directories = tempDirectories
-
+    
     dirCount = len(directories)
     if dirCount>1:
         print("Multiple directories found, Select Working Directory:")
@@ -79,8 +80,16 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             else:
                  infoTemplate = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo))[1]
 
-        if "Use Separator" in extraParams:
-            splitString = folderInfoList.split(separator)
+        if extraParams != None and "Use Separator" in extraParams:
+            tempSplitString = []
+            for item in folderInfoList:
+                if separator in item:
+                    for tag in item.split(separator):
+                        tempSplitString.append(tag)
+                else:
+                    tempSplitString.append(item)
+
+            splitString = tempSplitString
         
         else:
             splitString = folderInfoList
@@ -91,14 +100,14 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
     if mode == "Make Template":
 
-        if "Update Template" in extraParams:
+        if extraParams != None and "Update Template" in extraParams:
             usefulInfoList = extraParams[1]
         else:
             if separatorFlag:
                 usefulInfoList = splitString(filePath,separator,extraParams="Use Separator")[0]
             else:
-                usefulInfoList = splitString(filePath)
-            print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for conveniencce, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
+                usefulInfoList = splitString(filePath)[0]
+            print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for convenience, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
             
         for tag in usefulInfoList:
             tagName = input(f"What does the tag \"{tag}\" represent?\n")
@@ -113,7 +122,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
                     print(f"{i}. {item}")
                     tempDict[i] = item
 
-                infoTemplateString = input("Using the numbers, choose which, and in what order the information should be coppied to the file name separated by spaces (unused numbers will be ignored):\n\n")
+                infoTemplateString = input("Using the numbers, choose which,\nand in what order the information should be coppied to the file name separated by spaces (unused numbers will be ignored):\n")
 
                 tempList2 = []
                 print("Your selection was:")
