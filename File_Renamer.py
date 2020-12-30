@@ -27,7 +27,7 @@ def getDirs(path):
             currentDir = os.getcwd()
 
     elif dirCount == 1:   
-        if (currentDir := input(f"The directory found is \"{directories[0]}\" is this the desired directory? [Y/N].\nIf this is not the desired directory, insert the path for the new directory or move this module to that location: \n")) != "Y":
+        if (currentDir := input(f"The directory found is \"{directories[0]}\" is this the desired directory? [Y/N].\nIf this is not the desired directory, insert the path for the new directory or move this module to that location: \n")) not in ["Y",'y']:
             currentDir = currentDir.lstrip("N ")
             try:
                 os.chdir(currentDir)
@@ -46,7 +46,6 @@ def getDirs(path):
     return (directories,dirCount,currentDir)
 
 def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve Info",extraParams = None):
-    global usefulInfoPosDict
     
     infoList = []
     separator = separator
@@ -54,7 +53,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     fileExtension = ""
 
     def splitString(string, separator = "_", extraParams = None):
-
+        separator = separator
         topDir = currentDir.split("\\")[-1]
         topDirPos = filePath.find(topDir)
 
@@ -74,13 +73,15 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
         if newLength > currentDirectoryDepth:
             print( 3*"\n" + f"{newLength-currentDirectoryDepth} new tag(s) were found!\n")
-            newUsefulInfo = folderInfoList[currentDirectoryDepth + 1 :-1]
+            newUsefulInfo = folderInfoList[currentDirectoryDepth:]
 
             nonlocal infoTemplate
             if separatorFlag:
                 infoTemplate = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo,"Use Separator"))[1]
             else:
-                 infoTemplate = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo))[1]
+                infoTemplate = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo))[1]
+
+            currentDirectoryDepth = newLength
 
         if extraParams != None and "Use Separator" in extraParams:
             tempSplitString = []
@@ -98,6 +99,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
         
         return splitString,fileName,fileExtension   
 
+    global usefulInfoPosDict
     if mode == "Make Template":
 
         if extraParams != None and "Update Template" in extraParams:
@@ -111,12 +113,13 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             
         for tag in usefulInfoList:
             tagName = input(f"What does the tag \"{tag}\" represent?\n")
+            
             usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
         
         if infoTemplate == []:
             correctSelection = "N"
             tempDict = {}
-            while correctSelection != "Y":
+            while correctSelection not in ["Y","y"]:
                 print(3*"\n"+"These are the tags you named earlier:")
                 for i, item in enumerate(usefulInfoPosDict.keys()):
                     print(f"{i}. {item}")
@@ -136,17 +139,15 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
             infoTemplate = tempList2
 
-            for i in tempDict.values():
-                if i not in tempList2:
-                    usefulInfoPosDict[i] = usefulInfoPosDict[i] + " (Unused)"
-            
+            usefulInfoPosDict = {(value if value in tempList2 else value+" (Unused)"):key for (key,value) in tempDict.items()}
+
         else:
-            changePattern = ("New Tags were added since last selection, do you wish to update naming pattern? [Y/N]\n")
+            changePattern = input("New Tags were added since last selection, do you wish to update naming pattern? [Y/N]\n")
             
-            if changePattern == "Y":
-                correctSelection = "N"
+            if changePattern in ["Y","y"]:
+                correctSelection = ""
                 tempDict = {}
-                while correctSelection != "Y":
+                while correctSelection not in ["Y","y"]:
                     print(3*"\n"+"This is the updated list of tags:")
                     for i, item in enumerate(usefulInfoPosDict.keys()):
                         print(f"{i}. {item}")
@@ -164,6 +165,8 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
                 infoTemplate = tempList2
 
+                #FIXME: Whatever mess is happeing with the adding of new tags into the dictionary/infotemplate exception, see previous implementation.
+
                 for i in tempDict.values():
                     if i not in tempList2:
                         if "(Unused)" not in usefulInfoPosDict[i]:
@@ -175,9 +178,9 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
     elif mode == "Get Info":
         if separatorFlag:
-            allInfoList,_fileName,_fileExtension = splitString(filePath,separator,extraParams="Use Separator")
+            allInfoList,_fileName,fileExtension = splitString(filePath,separator,extraParams="Use Separator")
         else:
-            allInfoList,_fileName,_fileExtension = splitString(filePath,separator)
+            allInfoList,_fileName,fileExtension = splitString(filePath,separator)
         for item in infoTemplate:
             try:
                 infoPos = usefulInfoPosDict[item]
@@ -189,21 +192,20 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     
     return (infoList, infoTemplate,fileExtension)
 
-def renameFile(filePath,infoList=[],fileExtension="",separator = "_",extraParams = None, failCounter = 0):
+def renameFile(filePath,infoList=[],fileExtension="",separator = "_", failCounter = 0):
+    failCounter = failCounter
+    actualName = separator.join(infoList)
     if failCounter == 0:
-        actualName = infoList.join(separator)
         actualPath = filePath.split("\\")[:-1]
-        actualPath = actualPath + os.sep + actualName + fileExtension
+        actualPath = (os.sep).join(actualPath) + os.sep + actualName + fileExtension
     else:
-        actualPath = extraParams
+        actualPath = (os.sep).join((filePath.split("\\")[:-1])) + os.sep + actualName + f"({str(failCounter)})" + fileExtension
+
     try:
         os.rename(filePath,actualPath)
     except FileExistsError:
         failCounter +=1
-        actualPath = filePath.split("\\")[:-1] + os.sep + actualName + failCounter + fileExtension
-        renameFile(filePath,extraParams=actualPath,failCounter=failCounter)
-
-    finally: failCounter = 0
+        renameFile(filePath,infoList,fileExtension,separator,failCounter)
     
 def main():
     global currentPath 
@@ -218,7 +220,7 @@ def main():
     
     separatorPrompt = input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it: (Optional)") 
     if separatorPrompt != "N":
-        separator = separatorPrompt.lstrip("Y ")
+        separator = separatorPrompt.replace("Y ","").replace("y ","")
         global separatorFlag
         separatorFlag = True
         
@@ -229,12 +231,12 @@ def main():
                 filePathString = root + os.sep +name
                 global fileCounter,infoTemplate
                 if fileCounter == 0:                    
-                    infoTemplate = getInfoFromFolders(filePath=filePathString,mode="Make Template")[1]
-                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, infoTemplate = infoTemplate, mode="Get Info")
+                    infoTemplate = getInfoFromFolders(filePath=filePathString,separator=separator,mode="Make Template")[1]
+                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, separator=separator, infoTemplate = infoTemplate, mode="Get Info")
                     renameFile(filePathString,infoList,fileExtension,separator)
 
                 else:
-                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, infoTemplate, mode="Get Info")
+                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, separator=separator, infoTemplate = infoTemplate, mode="Get Info")
                     renameFile(filePathString,infoList,fileExtension,separator)
 
 
@@ -250,6 +252,10 @@ separatorFlag = False
 
 
 while dirCount >= 0 or exitFlag == True:
-    main()
-    if continueFlag := input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") != "Y":
+    try:
+        main()
+    except Exception as exp:
+        print(exp)
+
+    if continueFlag := input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
         exitFlag = False
