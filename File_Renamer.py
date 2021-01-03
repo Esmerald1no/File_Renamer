@@ -161,18 +161,24 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
                         print(tempDict[int(i)],end="_")
                         tempList2.append(tempDict[int(i)])
                         
-                    correctSelection = input("Is this correct?[Y/N]\n")
+                    correctSelection = input("\nIs this correct?[Y/N]\n")
 
                 infoTemplate = tempList2
 
                 #FIXME: Whatever mess is happeing with the adding of new tags into the dictionary/infotemplate exception, see previous implementation.
 
                 for i in tempDict.values():
+                    usefulInfoPosDictList = list(usefulInfoPosDict.keys())
                     if i not in tempList2:
-                        if "(Unused)" not in usefulInfoPosDict[i]:
-                            usefulInfoPosDict[i] = usefulInfoPosDict[i] + " (Unused)"
-                    elif i in tempList2 and ("(Unused)" in usefulInfoPosDict[i]):
-                        usefulInfoPosDict[i] = usefulInfoPosDict[i].replace(" (Unused)","")
+                        if (i+" (Unused)") not in usefulInfoPosDictList:
+                            usefulInfoPosDict = { (value+" (Unused)" if value == i else value):key for (key,value) in tempDict.items() }
+                    elif i in tempList2:
+                        if  i in usefulInfoPosDictList and " (Unused)" in i:
+                            iIndex = list(tempDict.keys())[list(tempDict.values()).index(i)]
+                            d1 = {iIndex:i.replace(" (Unused)","")}
+                            tempDict.update(d1)
+                            usefulInfoPosDict = { (i.replace(" (Unused)","") if value == i else value):key for (key,value) in tempDict.items() }
+
             else:
                 print("Ignoring new entries.")
 
@@ -220,7 +226,7 @@ def main():
     
     separatorPrompt = input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it: (Optional)") 
     if separatorPrompt != "N":
-        separator = separatorPrompt.replace("Y ","").replace("y ","")
+        separator = separatorPrompt.replace("Y ","").replace("y ","").replace("Y","").replace("Y","")
         global separatorFlag
         separatorFlag = True
         
@@ -252,10 +258,8 @@ separatorFlag = False
 
 
 while dirCount >= 0 or exitFlag == True:
-    try:
-        main()
-    except Exception as exp:
-        print(exp)
+    
+    main()
 
     if continueFlag := input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
         exitFlag = False
