@@ -72,7 +72,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
         if newLength > currentDirectoryDepth:
             print( 3*"\n" + f"{newLength-currentDirectoryDepth} new tag(s) were found!\n")
-            newUsefulInfo = folderInfoList[currentDirectoryDepth:]
+            newUsefulInfo = (folderInfoList,folderInfoList[:currentDirectoryDepth] )
 
             nonlocal infoTemplate
             if separatorFlag:
@@ -82,7 +82,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
             currentDirectoryDepth = newLength
 
-        if extraParams != None and "Use Separator" in extraParams:
+        if extraParams != None and ("Use Separator" in extraParams) :
             tempSplitString = []
             for item in folderInfoList:
                 if separator in item:
@@ -99,10 +99,11 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
         return splitString,fileName,fileExtension   
 
     global usefulInfoPosDict
+    
     if mode == "Make Template":
-
+        previousInfoList = []
         if extraParams != None and "Update Template" in extraParams:
-            usefulInfoList = extraParams[1]
+            usefulInfoList,previousInfoList = extraParams[1]
         else:
             if separatorFlag:
                 usefulInfoList = splitString(filePath,separator,extraParams="Use Separator")[0]
@@ -111,9 +112,9 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for convenience, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
             
         for tag in usefulInfoList:
-            tagName = input(f"What does the tag \"{tag}\" represent?\n")
-            
-            usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
+            if tag not in previousInfoList:
+                tagName = input(f"What does the tag \"{tag}\" represent?\n")
+                usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
         
         if infoTemplate == []:
             correctSelection = "N"
@@ -163,8 +164,6 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
                     correctSelection = input("\nIs this correct?[Y/N]\n")
 
                 infoTemplate = tempList2
-
-                #FIXME: Whatever mess is happeing with the adding of new tags into the dictionary/infotemplate exception, see previous implementation.
 
                 for i in tempDict.values():
                     usefulInfoPosDictList = list(usefulInfoPosDict.keys())
