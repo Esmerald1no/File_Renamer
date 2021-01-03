@@ -1,5 +1,4 @@
 import os
-from collections import defaultdict
 
 #TEMP: Remove afterward
 os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
@@ -219,12 +218,18 @@ def main():
 
     global directories,dirCount,currentDir
     directories,dirCount,currentDir = getDirs(currentPath)
+    if dirCount == -1: return False
     separator = "_"
     fileExtension = input("What is the file extension of the file(s) you are trying to rename?\n")
+    
+    if input(f"Please confirm that the desired file extension is ({fileExtension}) [Y/N]: ") not in ["Y","y"]:
+        fileExtension = input("What is the desired file extension?: ")
     if "." not in fileExtension:
         fileExtension = "."+fileExtension
     
+    
     separatorPrompt = input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it: (Optional)") 
+    if separatorPrompt == "quit": return True  
     if separatorPrompt != "N":
         separator = separatorPrompt.replace("Y ","").replace("y ","").replace("Y","").replace("Y","")
         global separatorFlag
@@ -246,20 +251,20 @@ def main():
                     renameFile(filePathString,infoList,fileExtension,separator)
 
 
-                fileCounter += 1 
+                fileCounter += 1
 
 exitFlag = False
 directories,visitedDirs,dirCount,currentDir,currentPath = [],[],0,"",""
 infoTemplate = []
-usefulInfoPosDict = defaultdict(dict)
+usefulInfoPosDict = {}
 fileCounter,currentDirectoryDepth = 0,0
 separatorFlag = False
 
 
 
-while dirCount >= 0 or exitFlag == True:
+while not exitFlag:
     
-    main()
+    exitFlag = main()
 
     if continueFlag := input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
         exitFlag = False
