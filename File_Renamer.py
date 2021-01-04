@@ -1,8 +1,5 @@
 import os
 
-#TEMP: Remove afterward
-os.chdir(r"C:\Users\Bruno\Dropbox\ImageProcessing_Bruno")
-
 def getDirs(path):
     
     directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
