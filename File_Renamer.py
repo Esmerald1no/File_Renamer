@@ -217,7 +217,7 @@ def main():
     if dirCount == -1: return False
     separator = "_"
     fileExtension = input("What is the file extension of the file(s) you are trying to rename?\n")
-    
+
     if input(f"Please confirm that the desired file extension is ({fileExtension}) [Y/N]: ") not in ["Y","y"]:
         fileExtension = input("What is the desired file extension?: ")
     if "." not in fileExtension:
