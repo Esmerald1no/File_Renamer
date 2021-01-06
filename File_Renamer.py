@@ -249,6 +249,8 @@ def main():
 
 
                 fileCounter += 1
+                
+    dirCount -=1 
 
 exitFlag = False
 directories,visitedDirs,dirCount,currentDir,currentPath = [],[],0,"",""
