@@ -59,7 +59,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
         fileName = tempList[-1]
         fileExtension = "." + fileName.split(".")[-1]
 
-        folderInfoList = tempList[:-1]
+        folderInfoList = tempList[:-1] + [tempList[-1].replace(fileExtension,"")]
 
         global currentDirectoryDepth
         if fileCounter == 0:
