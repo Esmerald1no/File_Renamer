@@ -98,6 +98,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     global usefulInfoPosDict
     
     if mode == "Make Template":
+        #TODO: Get information from file name itself as well.
         previousInfoList = []
         if extraParams != None and "Update Template" in extraParams:
             usefulInfoList,previousInfoList = extraParams[1]
@@ -262,5 +263,6 @@ while not exitFlag:
     
     exitFlag = main()
 
+    #TODO: #15 Check Directory count there should not be any directories left.
     if continueFlag := input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
         exitFlag = False
