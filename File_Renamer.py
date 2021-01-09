@@ -52,12 +52,12 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
     def splitString(string, separator = "_", extraParams = None):
         separator = separator
-        topDir = currentDir.split("\\")[-1]
+        topDir = currentDir.split(os.sep)[-1]
         topDirPos = filePath.find(topDir)
 
         folderInfoString = filePath[topDirPos:]
 
-        tempList = folderInfoString.split("\\")
+        tempList = folderInfoString.split(os.sep)
         fileName = tempList[-1]
         fileExtension = "." + fileName.split(".")[-1]
 
@@ -100,7 +100,6 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     global usefulInfoPosDict
     
     if mode == "Make Template":
-        #TODO: Get information from file name itself as well.
         previousInfoList = []
         if extraParams != None and "Update Template" in extraParams:
             usefulInfoList,previousInfoList = extraParams[1]
@@ -114,6 +113,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
         for tag in usefulInfoList:
             if tag not in previousInfoList:
                 tagName = input(f"What does the tag \"{tag}\" represent?\n")
+                if tagName == "quit":
                 usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
         
         if infoTemplate == []:
@@ -227,7 +227,7 @@ def main():
         fileExtension = "."+fileExtension
     
     
-    separatorPrompt = input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it: (Optional)") 
+    separatorPrompt = input("Are you using separators to store information in the folder names?[Y/N]\nIf yes, please indicate it with a space in between: (Optional)") 
     if separatorPrompt == "quit": return True  
     if separatorPrompt != "N":
         separator = separatorPrompt.replace("Y ","").replace("y ","").replace("Y","").replace("Y","")
