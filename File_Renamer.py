@@ -1,5 +1,8 @@
 import os
 
+
+#TODO: Fix global vs local UsefulPosInfoDict
+os.chdir(r"D:\downloads\ImageProcessing_Bruno")
 def getDirs(path):
     
     directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
@@ -95,9 +98,11 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
         
         return splitString,fileName,fileExtension   
 
-    global usefulInfoPosDict
+   
     
     if mode == "Make Template":
+        usefulInfoPosDict = {}
+
         previousInfoList = []
         if extraParams != None and "Update Template" in extraParams:
             usefulInfoList,previousInfoList = extraParams[1]
@@ -191,7 +196,6 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             except IndexError:
                 infoList.append("")
 
-    
     return (infoList, infoTemplate,fileExtension)
 
 def renameFile(filePath,infoList=[],fileExtension="",separator = "_", failCounter = 0):
