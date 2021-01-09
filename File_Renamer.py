@@ -1,7 +1,5 @@
 import os
 
-os.chdir(r"D:\downloads\ImageProcessing_Bruno")
-
 def getDirs(path):
     
     directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
