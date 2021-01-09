@@ -1,5 +1,7 @@
 import os
 
+os.chdir(r"D:\downloads\ImageProcessing_Bruno")
+
 def getDirs(path):
     
     directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
@@ -14,13 +16,13 @@ def getDirs(path):
         print("Multiple directories found, Select Working Directory:")
         for i in range(dirCount):
             print(f"{i+1}. {directories[i]}")
-            currentDir = int(input())
+        currentDir = int(input())
 
-            
-            visitedDirs.append(directories[currentDir-1])
+        
+        visitedDirs.append(directories[currentDir-1])
 
-            os.chdir(directories[currentDir-1])
-            currentDir = os.getcwd()
+        os.chdir(directories[currentDir-1])
+        currentDir = os.getcwd()
 
     elif dirCount == 1:   
         if (currentDir := input(f"The directory found is \"{directories[0]}\" is this the desired directory? [Y/N].\nIf this is not the desired directory, insert the path for the new directory or move this module to that location: \n")) not in ["Y",'y']:
