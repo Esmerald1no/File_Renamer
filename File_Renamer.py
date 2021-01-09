@@ -112,7 +112,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             if tag not in previousInfoList:
                 tagName = input(f"What does the tag \"{tag}\" represent?\n")
                 if tagName == "quit":
-                usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
+                    usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
         
         if infoTemplate == []:
             correctSelection = "N"
