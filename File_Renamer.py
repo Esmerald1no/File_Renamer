@@ -1,7 +1,4 @@
-import os
-
-
-#TODO: Fix global vs local UsefulPosInfoDict    
+import os   
 
 def getDirs(path):
     
@@ -272,6 +269,8 @@ separatorFlag = False
 while not exitFlag:
     exitFlag,usefulInfoPosDict = main()
 
-    #TODO: #15 Check Directory count there should not be any directories left.
-    if continueFlag := input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
-        exitFlag = False
+    if dirCount > 0:
+        if continueFlag := input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
+            exitFlag = False
+        else: exitFlag = True
+    else: exitFlag = True
