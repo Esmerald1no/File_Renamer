@@ -1,8 +1,8 @@
 import os
 
 
-#TODO: Fix global vs local UsefulPosInfoDict
-os.chdir(r"D:\downloads\ImageProcessing_Bruno")
+#TODO: Fix global vs local UsefulPosInfoDict    
+
 def getDirs(path):
     
     directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
@@ -44,12 +44,13 @@ def getDirs(path):
 
     return (directories,dirCount,currentDir)
 
-def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve Info",extraParams = None):
+def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve Info",extraParams = None,usefulInfoPosDict = {}):
     
     infoList = []
     separator = separator
     infoTemplate = infoTemplate
     fileExtension = ""
+    usefulInfoPosDict = usefulInfoPosDict
 
     def splitString(string, separator = "_", extraParams = None):
         separator = separator
@@ -76,9 +77,9 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
             nonlocal infoTemplate
             if separatorFlag:
-                infoTemplate = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo,"Use Separator"))[1]
+                _infoList, infoTemplate,_fileExtension, usefulInfoPosDict = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo,"Use Separator"), usefulInfoPosDict= usefulInfoPosDict)
             else:
-                infoTemplate = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo))[1]
+               _infoList, infoTemplate, _fileExtension, usefulInfoPosDict = getInfoFromFolders(filePath, separator=separator, infoTemplate=infoTemplate, mode="Make Template",extraParams=("Update Template",newUsefulInfo), usefulInfoPosDict= usefulInfoPosDict)
 
             currentDirectoryDepth = newLength
 
@@ -96,7 +97,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
         else:
             splitString = folderInfoList
         
-        return splitString,fileName,fileExtension   
+        return (splitString,fileName,fileExtension,usefulInfoPosDict)   
 
    
     
@@ -108,9 +109,9 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             usefulInfoList,previousInfoList = extraParams[1]
         else:
             if separatorFlag:
-                usefulInfoList = splitString(filePath,separator,extraParams="Use Separator")[0]
+                usefulInfoList, _fileName, _fileExtension, usefulInfoPosDict = splitString(filePath,separator,extraParams="Use Separator")
             else:
-                usefulInfoList = splitString(filePath)[0]
+                usefulInfoList, _fileName, _fileExtension, usefulInfoPosDict = splitString(filePath)
             print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for convenience, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
             
         for tag in usefulInfoList:
@@ -185,9 +186,9 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
 
     elif mode == "Get Info":
         if separatorFlag:
-            allInfoList,_fileName,fileExtension = splitString(filePath,separator,extraParams="Use Separator")
+            allInfoList,_fileName,fileExtension, usefulInfoPosDict = splitString(filePath,separator,extraParams="Use Separator")
         else:
-            allInfoList,_fileName,fileExtension = splitString(filePath,separator)
+            allInfoList,_fileName,fileExtension, usefulInfoPosDict = splitString(filePath,separator)
         for item in infoTemplate:
             try:
                 infoPos = usefulInfoPosDict[item]
@@ -196,7 +197,7 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
             except IndexError:
                 infoList.append("")
 
-    return (infoList, infoTemplate,fileExtension)
+    return (infoList, infoTemplate,fileExtension,usefulInfoPosDict)
 
 def renameFile(filePath,infoList=[],fileExtension="",separator = "_", failCounter = 0):
     failCounter = failCounter
@@ -243,18 +244,21 @@ def main():
                 filePathString = root + os.sep +name
                 global fileCounter,infoTemplate
                 if fileCounter == 0:                    
-                    infoTemplate = getInfoFromFolders(filePath=filePathString,separator=separator,mode="Make Template")[1]
-                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, separator=separator, infoTemplate = infoTemplate, mode="Get Info")
+                    _infoList, infoTemplate, _fileExtension, usefulInfoPosDict = getInfoFromFolders(filePath=filePathString,separator=separator,mode="Make Template",usefulInfoPosDict= usefulInfoPosDict)
+                    infoList,_infoTemplate,fileExtension, usefulInfoPosDict = getInfoFromFolders(filePathString, separator=separator, infoTemplate = infoTemplate, mode="Get Info", usefulInfoPosDict=usefulInfoPosDict)
                     renameFile(filePathString,infoList,fileExtension,separator)
 
                 else:
-                    infoList,_infoTemplate,fileExtension = getInfoFromFolders(filePathString, separator=separator, infoTemplate = infoTemplate, mode="Get Info")
+                    infoList, _infoTemplate, fileExtension, usefulInfoPosDict= getInfoFromFolders(filePathString, separator=separator, infoTemplate = infoTemplate, mode="Get Info", usefulInfoPosDict= usefulInfoPosDict)
                     renameFile(filePathString,infoList,fileExtension,separator)
 
 
                 fileCounter += 1
                 
-    dirCount -=1 
+    dirCount -=1
+
+    return True, usefulInfoPosDict
+
 
 exitFlag = False
 directories,visitedDirs,dirCount,currentDir,currentPath = [],[],0,"",""
@@ -266,8 +270,7 @@ separatorFlag = False
 
 
 while not exitFlag:
-    
-    exitFlag = main()
+    exitFlag,usefulInfoPosDict = main()
 
     #TODO: #15 Check Directory count there should not be any directories left.
     if continueFlag := input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
