@@ -1,7 +1,18 @@
 import os   
 
 def getDirs(path):
+    '''
+    short explanation
+
+    in depth explanation
+
+    Parameters:
+        -
     
+    Returns:
+        -
+
+    '''
     directories = [name for name in os.listdir(currentPath) if os.path.isdir(name)]
 
     global visitedDirs
@@ -42,7 +53,20 @@ def getDirs(path):
     return (directories,dirCount,currentDir)
 
 def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve Info",extraParams = None,usefulInfoPosDict = {}):
+    '''
+    short explanation
+
+    in depth explanation
+
+    Parameters:
+        -
     
+    Returns:
+        -
+
+    '''
+
+
     infoList = []
     separator = separator
     infoTemplate = infoTemplate
@@ -50,6 +74,18 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     usefulInfoPosDict = usefulInfoPosDict
 
     def splitString(string, separator = "_", extraParams = None):
+        '''
+        short explanation
+
+        in depth explanation
+
+        Parameters:
+            -
+        
+        Returns:
+            -
+
+        '''
         separator = separator
         topDir = currentDir.split(os.sep)[-1]
         topDirPos = filePath.find(topDir)
@@ -197,6 +233,19 @@ def getInfoFromFolders(filePath,separator = "_",infoTemplate=[],mode = "Retrieve
     return (infoList, infoTemplate,fileExtension,usefulInfoPosDict)
 
 def renameFile(filePath,infoList=[],fileExtension="",separator = "_", failCounter = 0):
+    '''
+    short explanation
+
+    in depth explanation
+
+    Parameters:
+        -
+    
+    Returns:
+        -
+
+    '''
+
     failCounter = failCounter
     actualName = separator.join(infoList)
     if failCounter == 0:
@@ -212,6 +261,19 @@ def renameFile(filePath,infoList=[],fileExtension="",separator = "_", failCounte
         renameFile(filePath,infoList,fileExtension,separator,failCounter)
     
 def main():
+    '''
+    short explanation
+
+    in depth explanation
+
+    Parameters:
+        -
+    
+    Returns:
+        -
+
+    '''
+    
     global currentPath 
     currentPath = os.path.abspath(os.getcwd())
 
