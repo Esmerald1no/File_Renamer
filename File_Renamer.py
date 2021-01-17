@@ -164,12 +164,15 @@ def getInfoFromFolders(filePath, separator = "_", infoTemplate=[], mode = "Retri
 
     #Function Body:
     
-    if mode == "Make Template":
+    if mode == "Make Template": #Proceeds if mode is set to "Make Template".
         usefulInfoPosDict = {}
 
         previousInfoList = []
-        if extraParams != None and "Update Template" in extraParams:
-            usefulInfoList,previousInfoList = extraParams[1]
+        
+        if extraParams != None and "Update Template" in extraParams: #Runs only if extraParams is set to "Update Template." Branch only runs if called from within splitString().
+            #Updates usefulInfoList
+            usefulInfoList = extraParams[1]
+            previousInfoList = usefulInfoPosDict.keys()
         else:
             if separatorFlag:
                 usefulInfoList, _fileName, _fileExtension, usefulInfoPosDict = splitString(filePath,separator,extraParams="Use Separator")
@@ -180,8 +183,10 @@ def getInfoFromFolders(filePath, separator = "_", infoTemplate=[], mode = "Retri
         for tag in usefulInfoList:
             if tag not in previousInfoList:
                 tagName = input(f"What does the tag \"{tag}\" represent?\n")
-                if tagName == "quit":
+                if tagName != "quit":
                     usefulInfoPosDict[tagName] = usefulInfoList.index(tag)
+                else:
+                    return
         
         if infoTemplate == []:
             correctSelection = "N"
@@ -332,6 +337,7 @@ def main(usefulInfoPosDictList = {}):
                 global fileCounter,infoTemplate
                 if fileCounter == 0:                    
                     _infoList, infoTemplate, _fileExtension, usefulInfoPosDict = getInfoFromFolders(filePath=filePathString,separator=separator,mode="Make Template",usefulInfoPosDict= usefulInfoPosDict)
+                    if _fileExtension == 'quit': return True,{}
                     infoList,_infoTemplate,fileExtension, usefulInfoPosDict = getInfoFromFolders(filePathString, separator=separator, infoTemplate = infoTemplate, mode="Get Info", usefulInfoPosDict=usefulInfoPosDict)
                     renameFile(filePathString,infoList,fileExtension,separator)
 
