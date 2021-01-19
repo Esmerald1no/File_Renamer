@@ -22,6 +22,7 @@
 
 4. With the exception of the step that asks the user to name the "tags", if at any point you wish to exit the module, entering "quit" (without the quotes) in most input fields will terminate the module at its current state.  
 
+5. Once you are done using the module, feel free to delete it or move it to another folder.
 ## IMPORTANT NOTES AND DISCLAIMERS:
   
  **This program _WILL RENAME FILES IN YOUR SYSTEM_, make sure that you wish to do so and have a backup copy of your data, the program is really smart in trying its best to prevent any information from being lost, but it is not flawless! _If you tell it to rename using a convention that you regret afterward, or a mistake was made in any step there is no going back!_ You have been warned!  
