@@ -1,6 +1,10 @@
 #Module importing:
 
-import os,pickle   
+import os,sys,pickle   
+
+#Python version check:
+if sys.version_info[0] < 3.8:
+    raise Exception("Python 3.8 or a more recent version is required to run this module.")
 
 #Function declaration:
 
