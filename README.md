@@ -39,10 +39,10 @@
       *C:/.../Generic_Folder  
           ----->File_Renamer.py  
           ----->Folder_To_Be_Renamed(layer 0)  
-          ----->SubFolder1(layer 1)  
-              ----->SubSubFolder2(layer 2)  
-                  *.............*  
-                  *File_To_Be_Renamed.extension(layer n)*
+            ----->SubFolder1(layer 1)  
+                ----->SubSubFolder2(layer 2)  
+                    *.............*  
+                    *File_To_Be_Renamed.extension(layer n)*
 
  As you can see, the module also treats the file name as a layer of its own, allowing it to get information from there as well.
  
@@ -53,3 +53,4 @@
     *SubFolder2Information(layer x)*  
 
  Both SubFolder1 and SubFolder2 are on the same layer, so to keep information from the one you must keep information from the other, it is just a limitation of the program. So beware when you choose to remove information, because it might affect other files.
+ 
