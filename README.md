@@ -7,7 +7,7 @@
 - Python 3.8 or greater.  
 
 ## INSTRUCTIONS:  
-
+    
 1.	Download the File_Renamer.py module and copy it to the same level as the outermost folder you want to be renamed.  
       Example:  
         *C:/.../Generic_Folder*    
@@ -53,4 +53,5 @@
     *SubFolder2Information(layer x)*  
 
  Both SubFolder1 and SubFolder2 are on the same layer, so to keep information from the one you must keep information from the other, it is just a limitation of the program. So beware when you choose to remove information, because it might affect other files.
- 
+ 
+ This program generates a file named \"reportInformation.pkl\". It contains information that is used in the other half of this project(Spheroid_Detection) to generate a report after running it. If you do not intend on using the other module, just delete this file. Otherwise, keep this file in the same folder that you run Spheroid_Detection from.
