@@ -4,7 +4,7 @@
  Python does not use *Programs*, instead it uses *Modules*, this is the naming convention that will be used througout this document.
 
 ## REQUIREMENTS:  
-- Python 3.8 or greater  
+- Python 3.8 or greater.  
 
 ## INSTRUCTIONS:  
 
