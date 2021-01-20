@@ -100,7 +100,7 @@ def getInfoFromFolders(filePath, separator = "_", infoTemplate=[], mode = "Retri
 
     #Nested Function Declaration:
 
-    def splitString(string, separator = "_", extraParams = None):
+    def splitString(string, separator = "_", extraParams = None, usefulInfoPosDict= usefulInfoPosDict):
         '''
         Given the file path, this function will return a list of information obtained from splitting the path using the sparator if provided.
 
@@ -169,14 +169,13 @@ def getInfoFromFolders(filePath, separator = "_", infoTemplate=[], mode = "Retri
     #Function Body:
     
     if mode == "Make Template": #Proceeds if mode is set to "Make Template".
-        usefulInfoPosDict = {}
-
+        
         previousInfoList = []
+        previousInfoList = list(usefulInfoPosDict.keys())
         
         if extraParams != None and "Update Template" in extraParams: #Runs only if extraParams is set to "Update Template." Branch only runs if called from within splitString().
             #Setup for updating the infolist.
             usefulInfoList = extraParams[1]
-            previousInfoList = usefulInfoPosDict.keys()
         else:
             if separatorFlag:
                 #Retrieves usefulInfoList using separator
@@ -184,7 +183,7 @@ def getInfoFromFolders(filePath, separator = "_", infoTemplate=[], mode = "Retri
             else:
                 #Retrieves usefulInfoList without separator
                 usefulInfoList, _fileName, _fileExtension, usefulInfoPosDict = splitString(filePath)
-            print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for convenience, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. This prompt will show up only once.")
+            print(3*"\n"+"These are an example the following tags found in the folder names.\nYou will be asked to name them for convenience, then choose the tags wou wish to keep in the file name.\nIf any new tags are found you will be prompted if you wish to add them to the naming convention.\nWARNING: Consider what the tag represents rather than the actual tag when deciding the namimg convention. Additionally, make sure each tag has an unique name,\neven if it appears more than once, you can choose which occurance is used in naming after.\nThis prompt will show up only once.")
 
         #Questions the user about names for each tag and appends them to the usefulInfoPosDict as (Tag:index of tag).    
         for tag in usefulInfoList:
@@ -325,7 +324,7 @@ def renameFile(filePath,infoList,fileExtension,separator = "_", failCounter = 0)
         failCounter +=1
         renameFile(filePath,infoList,fileExtension,separator,failCounter)
     
-def main(usefulInfoPosDictList = {}):
+def main(usefulInfoPosDict = {}):
     '''
     Main function of the program.
 
@@ -364,6 +363,7 @@ def main(usefulInfoPosDictList = {}):
         
 
     for root, _dirs, files in os.walk(currentDir,topdown=True,followlinks=False):   #Iterates through every file in all folders and subfolders, ignores symbolic links
+        _dirs.sort()
         for name in files:  #For each file name.
             if name.endswith(fileExtension):    #If the extension matches the user input.
                 filePathString = root + os.sep +name    #Generates the string containing the full path to the file.
@@ -408,7 +408,7 @@ while not exitFlag:
     exitFlag,usefulInfoPosDict = main(usefulInfoPosDict)
 
     if dirCount > 0:
-        if input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
+        if input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") in ["Y","y"]:
             exitFlag = False
             if input("Do you wish to use the same configurations as last time?[Y/N]:\n") not in ["Y","y"]:
                 fileCounter = 0 #If the file counter is 0, it will run through the setup steps once more.
