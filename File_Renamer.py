@@ -6,6 +6,17 @@ import os,sys,pickle
 if sys.version_info[0] < 3.8:
     raise Exception("Python 3.8 or a more recent version is required to run this module.")
 
+#Initial variable setup:
+
+exitFlag = False #Looping Condition.
+visitedDirs = [] #List that contains the directories already visited by the module.
+dirCount = 0 #Number of directories that are in the same folder as the module(does not include visited directoreis).
+currentDir = "" #String that contains the path to the current working directory.
+infoTemplate = [] #List that contains the tags that should be present in the file name.
+usefulInfoPosDict = {} #Dictionary that contains the tag names and their position in the the splited file path.
+fileCounter,currentDirectoryDepth = 0,0 # Number of files already renamed, and the order of the deepest folder already visited respectively.
+separatorFlag = False #Flag that defines if the user is using a separator in their naming convention.
+
 #Function declaration:
 
 def getDirs(path):
@@ -389,18 +400,6 @@ def main(usefulInfoPosDictList = {}):
     dirCount -=1    #Decreases the number of directories remaning.
 
     return True, usefulInfoPosDict
-
-#Initial variable setup:
-
-exitFlag = False #Looping Condition.
-visitedDirs = [] #List that contains the directories already visited by the module.
-dirCount = 0 #Number of directories that are in the same folder as the module(does not include visited directoreis).
-currentDir = "" #String that contains the path to the current working directory.
-infoTemplate = [] #List that contains the tags that should be present in the file name.
-usefulInfoPosDict = {} #Dictionary that contains the tag names and their position in the the splited file path.
-fileCounter,currentDirectoryDepth = 0,0 # Number of files already renamed, and the order of the deepest folder already visited respectively.
-separatorFlag = False #Flag that defines if the user is using a separator in their naming convention.
-
 
 #Main Loop:
 
