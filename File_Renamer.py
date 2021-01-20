@@ -319,7 +319,7 @@ def renameFile(filePath,infoList,fileExtension,separator = "_", failCounter = 0)
         actualPath = (os.sep).join((filePath.split("\\")[:-1])) + os.sep + actualName + f"({str(failCounter)})" + fileExtension
 
     try:    #Try to rename the file.
-        os.rename(filePath,actualPath)
+        os.replace(filePath,actualPath)
     except FileExistsError: #If the file already exists.
         failCounter +=1
         renameFile(filePath,infoList,fileExtension,separator,failCounter)
