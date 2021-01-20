@@ -3,7 +3,7 @@
 import os,sys,pickle   
 
 #Python version check:
-if sys.version_info[0] < 3.8:
+if sys.version_info[0]+sys.version_info[1]/10 < 3.8:
     raise Exception("Python 3.8 or a more recent version is required to run this module.")
 
 #Function declaration:
@@ -100,7 +100,7 @@ def getInfoFromFolders(filePath, separator = "_", infoTemplate=[], mode = "Retri
 
     #Nested Function Declaration:
 
-    def splitString(string, separator = "_", extraParams = None):
+    def splitString(string, separator = "_", extraParams = None, usefulInfoPosDict= usefulInfoPosDict):
         '''
         Given the file path, this function will return a list of information obtained from splitting the path using the sparator if provided.
 
@@ -176,7 +176,7 @@ def getInfoFromFolders(filePath, separator = "_", infoTemplate=[], mode = "Retri
         if extraParams != None and "Update Template" in extraParams: #Runs only if extraParams is set to "Update Template." Branch only runs if called from within splitString().
             #Setup for updating the infolist.
             usefulInfoList = extraParams[1]
-            previousInfoList = usefulInfoPosDict.keys()
+            previousInfoList = list(usefulInfoPosDict.keys())
         else:
             if separatorFlag:
                 #Retrieves usefulInfoList using separator
@@ -325,7 +325,7 @@ def renameFile(filePath,infoList,fileExtension,separator = "_", failCounter = 0)
         failCounter +=1
         renameFile(filePath,infoList,fileExtension,separator,failCounter)
     
-def main(usefulInfoPosDictList = {}):
+def main(usefulInfoPosDict = {}):
     '''
     Main function of the program.
 
@@ -396,12 +396,14 @@ exitFlag = False #Looping Condition.
 visitedDirs = [] #List that contains the directories already visited by the module.
 dirCount = 0 #Number of directories that are in the same folder as the module(does not include visited directoreis).
 currentDir = "" #String that contains the path to the current working directory.
+fileCounter = 0 #Number of files that the module has already visited.
 infoTemplate = [] #List that contains the tags that should be present in the file name.
 usefulInfoPosDict = {} #Dictionary that contains the tag names and their position in the the splited file path.
 fileCounter,currentDirectoryDepth = 0,0 # Number of files already renamed, and the order of the deepest folder already visited respectively.
 separatorFlag = False #Flag that defines if the user is using a separator in their naming convention.
 
 
+os.chdir(r"D:\downloads\ImageProcessing_Bruno")
 #Main Loop:
 
 while not exitFlag:
@@ -411,7 +413,6 @@ while not exitFlag:
         if input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
             exitFlag = False
             if input("Do you wish to use the same configurations as last time?[Y/N]:\n") not in ["Y","y"]:
-                global fileCounter
                 fileCounter = 0 #If the file counter is 0, it will run through the setup steps once more.
 
 else:  
