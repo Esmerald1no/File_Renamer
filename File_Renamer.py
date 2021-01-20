@@ -12,6 +12,7 @@ exitFlag = False #Looping Condition.
 visitedDirs = [] #List that contains the directories already visited by the module.
 dirCount = 0 #Number of directories that are in the same folder as the module(does not include visited directoreis).
 currentDir = "" #String that contains the path to the current working directory.
+fileCounter = 0 #Number of files that the module has already visited.
 infoTemplate = [] #List that contains the tags that should be present in the file name.
 usefulInfoPosDict = {} #Dictionary that contains the tag names and their position in the the splited file path.
 fileCounter,currentDirectoryDepth = 0,0 # Number of files already renamed, and the order of the deepest folder already visited respectively.
@@ -410,7 +411,6 @@ while not exitFlag:
         if input(f"There are still {dirCount} directories remaining, do you wish to continue?[Y/N]:\n") not in ["Y","y"]:
             exitFlag = False
             if input("Do you wish to use the same configurations as last time?[Y/N]:\n") not in ["Y","y"]:
-                global fileCounter
                 fileCounter = 0 #If the file counter is 0, it will run through the setup steps once more.
 
 else:  
