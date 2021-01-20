@@ -402,8 +402,6 @@ usefulInfoPosDict = {} #Dictionary that contains the tag names and their positio
 fileCounter,currentDirectoryDepth = 0,0 # Number of files already renamed, and the order of the deepest folder already visited respectively.
 separatorFlag = False #Flag that defines if the user is using a separator in their naming convention.
 
-
-os.chdir(r"D:\downloads\ImageProcessing_Bruno")
 #Main Loop:
 
 while not exitFlag:
