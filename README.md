@@ -34,7 +34,7 @@
     
  If you tell the program to use \"\_\" as a separator, it will treat *Information1*, *Information2*, and *Information3* separately because there is the separator \"\_\" in between each of those. However, if you tell it to ignore the separator by telling the module you are not using separators, it will treat *Information1\_Information2\_Information3* as a single *tag*.
     
- When the program asks you to give a name to a “*tag*”, if it asks for the same information twice it is because it shows up more than once in the order of folders it has looked through if you want to keep only one of those *tags*, either name both of them the exact same thing, or just don’t select that second tag when the program prompts you to.  
+ When the program asks you to give a name to a “*tag*”, if it asks for the same information twice it is because it shows up more than once in the order of folders it has looked through. Each tag must have its unique name for the program to work, even if it repeats itself.  if you want to keep only one of those *tags*, just don’t select that second tag when the program prompts you to.
 
  This program does not read the content of the “*tags*” themselves. Instead, it looks for information in each layer of folders it walks through:  
       *C:/.../Generic_Folder  
