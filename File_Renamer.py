@@ -3,7 +3,7 @@
 import os,sys,pickle   
 
 #Python version check:
-if sys.version_info[0] < 3.8:
+if sys.version_info[0]+sys.version_info[1]/10 < 3.8:
     raise Exception("Python 3.8 or a more recent version is required to run this module.")
 
 #Initial variable setup:
