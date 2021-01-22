@@ -311,12 +311,12 @@ def renameFile(filePath,infoList,fileExtension,separator = "_", failCounter = 0)
 
     if failCounter == 0: #If the program has not encountered an error yet.
 
-        actualPath = filePath.split("\\")[:-1] # Retrieves the path for the file minus the previous name..
+        actualPath = filePath.split(os.sep)[:-1] # Retrieves the path for the file minus the previous name..
         actualPath = (os.sep).join(actualPath) + os.sep + actualName + fileExtension #Creates the new file name.
 
     else:   #If the program has failed before.
         #It will add the number of fails into the file name, creating hopefully an unique file name.
-        actualPath = (os.sep).join((filePath.split("\\")[:-1])) + os.sep + actualName + f"({str(failCounter)})" + fileExtension
+        actualPath = (os.sep).join((filePath.split(os.sep)[:-1])) + os.sep + actualName + f"({str(failCounter)})" + fileExtension
 
     try:    #Try to rename the file.
         os.replace(filePath,actualPath)
@@ -412,10 +412,3 @@ while not exitFlag:
             exitFlag = False
             if input("Do you wish to use the same configurations as last time?[Y/N]:\n") not in ["Y","y"]:
                 fileCounter = 0 #If the file counter is 0, it will run through the setup steps once more.
-
-else:  
-    #Once the module finishes runing, it saves the information list and usefulInfoPosDict to a file, used with spheroid_detection.py to
-    #generate a report.
-    with open("reportInformation.pkl","wb") as f:   #Creates the binary dump.
-        pickle.dump(infoTemplate,f) #Wrtites infoTemplate to the dump file.
-        pickle.dump(usefulInfoPosDict,f) #Writes usefulInfoPosDict to the dump file.
